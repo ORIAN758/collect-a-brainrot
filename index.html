@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collect a Brainrot — המשחק המשופר</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff007f, #7f00ff, #00f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* עיצוב כפתור הערוץ */
+        .youtube-box {
+            margin: 20px 0;
+        }
+
+        .yt-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #ff0000;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .yt-btn:hover {
+            background: #e60000;
+            transform: scale(1.05);
+        }
+
+        .yt-icon {
+            font-size: 1.4rem;
+        }
+
+        .stats-box {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card h3 {
+            color: #00f0ff;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card span {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .main-btn {
+            background: linear-gradient(45deg, #ff007f, #ff758c);
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+            transition: transform 0.1s, box-shadow 0.1s;
+            margin-bottom: 30px;
+        }
+
+        .main-btn:active {
+            transform: scale(0.93);
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+        }
+
+        .shop-section {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #43436b;
+        }
+
+        .shop-section h2 {
+            color: #ffdf00;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .shop-item {
+            background: rgba(25, 25, 45, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #555588;
+        }
+
+        .shop-item div {
+            text-align: right;
+        }
+
+        .shop-item h4 {
+            font-size: 1.1rem;
+        }
+
+        .shop-item p {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .buy-btn {
+            background: #00f0ff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .buy-btn:hover {
+            background: #ffdf00;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧠 Collect a Brainrot 💰</h1>
+        <p>שדרג את האוסף שלך ותייצר מטבעות אוטומטית!</p>
+        
+        <!-- אזור הקישור לערוץ היוטיוב -->
+        <div class="youtube-box">
+            <a href="https://www.youtube.com/@oporian758" target="_blank" class="yt-btn">
+                <span class="yt-icon">📺</span> תרשמו לערוץ OP orian!
+            </a>
+        </div>
+    </header>
+
+    <div class="stats-box">
+        <div class="stat-card">
+            <h3>מטבעות</h3>
+            <span id="coins">0</span>
+        </div>
+        <div class="stat-card">
+            <h3>לשנייה (CPS)</h3>
+            <span id="cps">0</span>
+        </div>
+    </div>
+
+    <button class="main-btn" onclick="collect()">אסוף מטבע! 🪙</button>
+
+    <div class="shop-section">
+        <h2>🛍️ חנות שדרוגים</h2>
+        
+        <div class="shop-item">
+            <div>
+                <h4>🌀 Skibidi Bot</h4>
+                <p>מייצר 1 מטבע לשנייה (עלות: 50)</p>
+            </div>
+            <button class="buy-btn" onclick="buyUpgrade(1, 50)">קנה (50)</button>
+        </div>
+
+        <div class="shop-item">
+            <div>
+                <h4>🚀 Galaxy Trillionaire</h4>
+                <p>מייצר 5 מטבעות לשנייה (עלות: 250)</p>
+            </div>
+            <button class="buy-btn" onclick="buyUpgrade(5, 250)">קנה (250)</button>
+        </div>
+    </div>
+
+    <script>
+        let coins = 0;
+        let cps = 0;
+
+        function collect() {
+            coins += 1;
+            updateDisplay();
+        }
+
+        function buyUpgrade(power, cost) {
+            if (coins >= cost) {
+                coins -= cost;
+                cps += power;
+                updateDisplay();
+            } else {
+                alert("אין לך מספיק מטבעות!");
+            }
+        }
+
+        setInterval(function() {
+            coins += cps;
+            updateDisplay();
+        }, 1000);
+
+        function updateDisplay() {
+            document.getElementById('coins').innerText = coins;
+            document.getElementById('cps').innerText = cps;
+        }
+    </script>
+
+</body>
+</html>
