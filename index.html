@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collect a Brainrot — משחק אישי</title>
+    <title>Collect a Brainrot — המשחק המקצועי</title>
 
     <style>
         * {
@@ -14,48 +14,98 @@
         }
 
         body {
-            background: linear-gradient(135deg, #090514, #180c2e, #0b1329);
+            background: radial-gradient(circle at center, #1b0f3a 0%, #080314 100%);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
             text-align: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* אלמנטים צבעוניים ברקע לאווירה מקצועית */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            opacity: 0.35;
+        }
+        body::before {
+            background: #ff007f;
+            top: -50px;
+            right: -50px;
+            animation: floatOrb 8s infinite alternate ease-in-out;
+        }
+        body::after {
+            background: #00f0ff;
+            bottom: -50px;
+            left: -50px;
+            animation: floatOrb 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(40px) scale(1.1); }
         }
 
         header h1 {
-            font-size: 3.2rem;
-            background: linear-gradient(45deg, #ff007f, #7f00ff, #00f0ff);
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff007f, #ffdf00, #00f0ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 25px rgba(255, 0, 127, 0.4));
+        }
+
+        /* נטרול רקע סגול מהאמוג'ים בכותרת */
+        header h1 span {
+            background: none !important;
+            -webkit-text-fill-color: initial !important;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+            display: inline-block;
+            animation: bounceEmoji 2s infinite ease-in-out;
+        }
+
+        @keyframes bounceEmoji {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
         }
 
         header p {
-            color: #a0a0c0;
-            font-size: 1.15rem;
+            color: #c0c0e0;
+            font-size: 1.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .youtube-box {
-            margin: 20px 0 30px 0;
+            margin: 25px 0 35px 0;
         }
 
         .yt-btn {
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            background: #ff0000;
+            background: linear-gradient(135deg, #ff0000, #b30000);
             color: white;
             text-decoration: none;
-            padding: 14px 28px;
-            font-size: 1.2rem;
+            padding: 14px 32px;
+            font-size: 1.25rem;
             font-weight: bold;
             border-radius: 50px;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
-            transition: transform 0.2s;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .yt-btn:hover {
-            transform: scale(1.08);
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 0 35px rgba(255, 0, 0, 0.8);
         }
 
         .container {
@@ -89,137 +139,188 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            padding: 18px 28px;
-            border-radius: 18px;
+            background: rgba(30, 20, 60, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            padding: 20px 32px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 240, 255, 0.8);
         }
 
         .stat-card h3 {
             color: #00f0ff;
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-bottom: 8px;
+            letter-spacing: 1px;
         }
 
         .stat-card span {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: bold;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
         }
 
         .main-btn {
-            background: linear-gradient(45deg, #ff007f, #ff758c);
+            background: linear-gradient(135deg, #ff007f, #7f00ff, #00f0ff);
+            background-size: 200% 200%;
+            animation: gradientAnim 5s infinite linear;
             border: none;
             color: white;
-            padding: 28px 60px;
-            font-size: 2.2rem;
-            font-weight: bold;
+            padding: 30px 60px;
+            font-size: 2.3rem;
+            font-weight: 900;
             border-radius: 60px;
             cursor: pointer;
-            box-shadow: 0 0 40px rgba(255, 0, 127, 0.7);
-            transition: transform 0.1s;
+            box-shadow: 0 0 45px rgba(255, 0, 127, 0.6);
+            transition: transform 0.1s, box-shadow 0.2s;
             margin-bottom: 35px;
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes gradientAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .main-btn:hover {
+            box-shadow: 0 0 60px rgba(0, 240, 255, 0.8);
+            transform: scale(1.02);
         }
 
         .main-btn:active {
-            transform: scale(0.94);
+            transform: scale(0.95);
         }
 
         .shop-section, .leaderboard-section {
-            background: rgba(20, 15, 45, 0.85);
-            border-radius: 22px;
+            background: rgba(20, 12, 45, 0.8);
+            border-radius: 24px;
             padding: 25px;
-            border: 1px solid rgba(127, 0, 255, 0.4);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(127, 0, 255, 0.5);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            text-align: right;
         }
 
         .shop-section h2, .leaderboard-section h2 {
             color: #ffdf00;
             margin-bottom: 18px;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            text-shadow: 0 0 12px rgba(255, 223, 0, 0.5);
+            text-align: center;
         }
 
         .shop-item {
-            background: rgba(35, 28, 70, 0.7);
+            background: rgba(40, 28, 80, 0.6);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            border-radius: 14px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(90, 90, 150, 0.5);
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(130, 90, 255, 0.3);
+            transition: background 0.2s, transform 0.2s, border-color 0.2s;
+        }
+
+        .shop-item:hover {
+            background: rgba(60, 40, 110, 0.8);
+            transform: translateY(-2px);
+            border-color: rgba(0, 240, 255, 0.6);
         }
 
         .shop-item h4 {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             color: #fff;
         }
 
         .shop-item p {
-            color: #b0b0ff;
-            font-size: 0.88rem;
-            margin-top: 3px;
+            color: #b0a8ff;
+            font-size: 0.9rem;
+            margin-top: 4px;
         }
 
         .buy-btn {
-            background: linear-gradient(45deg, #00f0ff, #0077ff);
+            background: linear-gradient(135deg, #00f0ff, #0077ff);
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 11px 22px;
             font-weight: bold;
-            border-radius: 10px;
+            font-size: 1rem;
+            border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .buy-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.8);
         }
 
         .lb-list {
             list-style: none;
-            text-align: right;
         }
 
         .lb-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 15px;
+            padding: 14px 18px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .lb-item.my-score {
-            background: rgba(0, 240, 255, 0.15);
-            border: 1px solid rgba(0, 240, 255, 0.5);
-            border-radius: 10px;
-            margin: 8px 0;
+            background: rgba(0, 240, 255, 0.12);
+            border: 1px solid rgba(0, 240, 255, 0.4);
             color: #00f0ff;
             font-weight: bold;
         }
 
         .timer-info {
-            font-size: 0.8rem;
-            color: #8888aa;
-            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: #9995cc;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         .reset-btn {
-            background: rgba(255, 0, 0, 0.2);
+            background: rgba(255, 0, 0, 0.15);
             color: #ff8888;
-            border: 1px solid rgba(255, 68, 68, 0.5);
-            padding: 10px 18px;
-            border-radius: 10px;
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            padding: 12px 18px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 0.9rem;
-            margin-top: 20px;
+            font-size: 0.95rem;
+            margin-top: 15px;
             width: 100%;
+            transition: background 0.2s, color 0.2s;
+            font-weight: bold;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 0, 0, 0.35);
+            color: #fff;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🧠 Collect a Brainrot 💰</h1>
-        <p>שדרג את האוסף שלך, צבור מטבעות ושבור שיאים אישיים!</p>
+        <h1><span>🧠</span> Collect a Brainrot <span>💰</span></h1>
+        <p>שדרג את האוסף שלך, צבור מטבעות ושבור שיאים אישיים בעולם ה-Brainrot!</p>
         
         <div class="youtube-box">
             <a href="https://www.youtube.com/@oporian758" target="_blank" class="yt-btn">
@@ -282,8 +383,8 @@
 
         <div class="sidebar-panel">
             <div class="leaderboard-section">
-                <h2>🏆 טבלת שיאים אישית (Top)</h2>
-                <div class="timer-info">השיאים הכי טובים שלך בכל הזמנים</div>
+                <h2>🏆 טבלת שיאים אישית</h2>
+                <div class="timer-info">השיאים הטובים ביותר שלך בכל הזמנים</div>
                 <ul class="lb-list" id="leaderboard">
                     <!-- מתעדכן אוטומטית -->
                 </ul>
@@ -305,14 +406,12 @@
         let coins = parseFloat(localStorage.getItem('brainrot_coins')) || 0;
         let cps = parseInt(localStorage.getItem('brainrot_cps')) || 0;
 
-        // טעינת רשימת השיאים האישיים
         let personalBests = JSON.parse(localStorage.getItem('brainrot_personal_bests')) || [
             { name: playerName, score: Math.floor(coins) }
         ];
 
         function checkPersonalBest() {
             let currentScore = Math.floor(coins);
-            // בדיקה האם השיא הנוכחי גבוה או שצריך לעדכן
             let existing = personalBests.find(p => p.name === playerName);
             if (existing) {
                 if (currentScore > existing.score) {
@@ -322,9 +421,8 @@
                 personalBests.push({ name: playerName, score: currentScore });
             }
 
-            // מיון מהגבוה לנמוך והשארת הטובים ביותר
             personalBests.sort((a, b) => b.score - a.score);
-            personalBests = personalBests.slice(0, 5); // שומר את ה-5 המובילים
+            personalBests = personalBests.slice(0, 5);
 
             localStorage.setItem('brainrot_personal_bests', JSON.stringify(personalBests));
             updateLeaderboardUI();
@@ -386,7 +484,6 @@
             lbContainer.innerHTML = htmlContent;
         }
 
-        // טעינה ראשונית
         updateDisplay();
         checkPersonalBest();
 
