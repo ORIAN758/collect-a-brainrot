@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collect a Brainrot — המשחק המשופר</title>
+    <title>Collect a Brainrot — המשחק האולטימטיבי</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: radial-gradient(circle at center, #1b143f 0%, #09061a 100%);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
@@ -21,17 +21,23 @@
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             background: linear-gradient(45deg, #ff007f, #7f00ff, #00f0ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-top: 10px;
             margin-bottom: 5px;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.4));
+        }
+
+        header p {
+            color: #b8b8d0;
+            font-size: 1.1rem;
         }
 
         /* עיצוב כפתור הערוץ */
         .youtube-box {
-            margin: 15px 0;
+            margin: 15px 0 25px 0;
         }
 
         .yt-btn {
@@ -41,36 +47,37 @@
             background: #ff0000;
             color: white;
             text-decoration: none;
-            padding: 10px 22px;
-            font-size: 1.1rem;
+            padding: 12px 26px;
+            font-size: 1.15rem;
             font-weight: bold;
             border-radius: 50px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
         }
 
         .yt-btn:hover {
             background: #e60000;
-            transform: scale(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 0 35px rgba(255, 0, 0, 0.9);
         }
 
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            max-width: 1000px;
+            gap: 25px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .game-panel {
             flex: 2;
-            min-width: 320px;
+            min-width: 340px;
         }
 
         .sidebar-panel {
             flex: 1;
-            min-width: 280px;
+            min-width: 300px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -80,71 +87,89 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin: 20px 0;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 20px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(12px);
+            box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.05);
         }
 
         .stat-card h3 {
             color: #00f0ff;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .stat-card span {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         .main-btn {
             background: linear-gradient(45deg, #ff007f, #ff758c);
             border: none;
             color: white;
-            padding: 20px 45px;
-            font-size: 1.7rem;
+            padding: 25px 55px;
+            font-size: 2rem;
             font-weight: bold;
-            border-radius: 50px;
+            border-radius: 60px;
             cursor: pointer;
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
-            transition: transform 0.1s, box-shadow 0.1s;
-            margin-bottom: 25px;
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.7);
+            transition: transform 0.1s, box-shadow 0.1s, filter 0.2s;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .main-btn:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 0 45px rgba(255, 0, 127, 0.9);
         }
 
         .main-btn:active {
-            transform: scale(0.93);
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+            transform: scale(0.95);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.9);
         }
 
         .shop-section, .leaderboard-section {
-            background: rgba(0, 0, 0, 0.35);
-            border-radius: 15px;
-            padding: 18px;
-            border: 1px solid #43436b;
-            backdrop-filter: blur(10px);
+            background: rgba(18, 14, 40, 0.75);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid rgba(127, 0, 255, 0.3);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         .shop-section h2, .leaderboard-section h2 {
             color: #ffdf00;
-            margin-bottom: 12px;
-            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            text-shadow: 0 0 10px rgba(255, 223, 0, 0.4);
         }
 
         .shop-item {
-            background: rgba(25, 25, 45, 0.8);
+            background: rgba(30, 25, 60, 0.6);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            border: 1px solid #555588;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(85, 85, 136, 0.4);
+            transition: background 0.2s;
+        }
+
+        .shop-item:hover {
+            background: rgba(45, 38, 85, 0.8);
         }
 
         .shop-item div {
@@ -152,28 +177,31 @@
         }
 
         .shop-item h4 {
-            font-size: 1rem;
+            font-size: 1.05rem;
+            color: #fff;
         }
 
         .shop-item p {
-            color: #aaa;
-            font-size: 0.8rem;
+            color: #aaaaff;
+            font-size: 0.82rem;
+            margin-top: 2px;
         }
 
         .buy-btn {
-            background: #00f0ff;
-            color: #000;
+            background: linear-gradient(45deg, #00f0ff, #0077ff);
+            color: #fff;
             border: none;
-            padding: 8px 15px;
+            padding: 9px 18px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 9px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
         }
 
         .buy-btn:hover {
-            background: #ffdf00;
-            transform: scale(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
         }
 
         /* טבלת מובילים */
@@ -185,9 +213,19 @@
         .lb-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.95rem;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 1rem;
+            align-items: center;
+        }
+
+        .lb-item.my-score {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 8px;
+            margin: 5px 0;
+            color: #00f0ff;
+            font-weight: bold;
         }
 
         .lb-item:last-child {
@@ -195,19 +233,20 @@
         }
 
         .reset-btn {
-            background: rgba(255, 0, 0, 0.2);
+            background: rgba(255, 0, 0, 0.15);
             color: #ff8888;
-            border: 1px solid #ff4444;
-            padding: 6px 12px;
-            border-radius: 6px;
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            padding: 8px 15px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.8rem;
-            margin-top: 15px;
-            transition: background 0.2s;
+            font-size: 0.85rem;
+            margin-top: 18px;
+            transition: background 0.2s, color 0.2s;
+            width: 100%;
         }
 
         .reset-btn:hover {
-            background: rgba(255, 0, 0, 0.4);
+            background: rgba(255, 0, 0, 0.35);
             color: #fff;
         }
     </style>
@@ -221,7 +260,7 @@
         <!-- כפתור ערוץ היוטיוב -->
         <div class="youtube-box">
             <a href="https://www.youtube.com/@oporian758" target="_blank" class="yt-btn">
-                <span class="yt-icon">📺</span> תרשמו לערוץ OP orian!
+                <span>📺</span> תרשמו לערוץ OP orian!
             </a>
         </div>
     </header>
@@ -268,21 +307,23 @@
                     </div>
                     <button class="buy-btn" onclick="buyUpgrade(25, 1200)">קנה (1200)</button>
                 </div>
+
+                <div class="shop-item">
+                    <div>
+                        <h4>🔥 Sigma Generator</h4>
+                        <p>מייצר 100 מטבעות לשנייה (עלות: 5000)</p>
+                    </div>
+                    <button class="buy-btn" onclick="buyUpgrade(100, 5000)">קנה (5000)</button>
+                </div>
             </div>
         </div>
 
-        <!-- צד ימין / שמאל: טבלת מובילים ושמירה -->
+        <!-- טבלת מובילים דינמית -->
         <div class="sidebar-panel">
             <div class="leaderboard-section">
-                <h2>🏆 טבלת מובילים</h2>
+                <h2>🏆 טבלת מובילים חיים</h2>
                 <ul class="lb-list" id="leaderboard">
-                    <li class="lb-item"><span>1. ProGamer99</span><span>👑 15,400</span></li>
-                    <li class="lb-item"><span>2. BrainrotMaster</span><span>👑 9,820</span></li>
-                    <li class="lb-item"><span>3. SkibidiGod</span><span>👑 5,100</span></li>
-                    <li class="lb-item"><span>4. Orian_Fan</span><span>👑 2,350</span></li>
-                    <li class="lb-item" id="player-score-row" style="color: #00f0ff; font-weight: bold;">
-                        <span>5. אוריאן (אתה)</span><span id="player-lb-coins">0</span>
-                    </li>
+                    <!-- יתמלא אוטומטית דרך JavaScript -->
                 </ul>
                 <button class="reset-btn" onclick="resetGame()">איפוס נתונים 🔄</button>
             </div>
@@ -290,9 +331,28 @@
     </div>
 
     <script>
-        // מערכת DataStore מקומית (טעינת נתונים שמורים)
+        // ניהול שם השחקן
+        let playerName = localStorage.getItem('brainrot_player_name');
+        if (!playerName) {
+            playerName = prompt("ברוך הבא ל-Collect a Brainrot! בחר את שם השחקן שלך:", "אוריאן");
+            if (!playerName || playerName.trim() === "") {
+                playerName = "אוריאן";
+            }
+            localStorage.setItem('brainrot_player_name', playerName);
+        }
+
+        // מערכת נתונים ושמירה
         let coins = parseFloat(localStorage.getItem('brainrot_coins')) || 0;
         let cps = parseInt(localStorage.getItem('brainrot_cps')) || 0;
+
+        // שחקנים מתחרים אמיתיים לכאורה שמתקדמים אוטומטית
+        let bots = [
+            { name: "ProGamer99", score: 15400, speed: 12 },
+            { name: "BrainrotMaster", score: 9820, speed: 8 },
+            { name: "SkibidiGod", score: 5100, speed: 5 },
+            { name: "SigmaBoy", score: 3200, speed: 3 },
+            { name: "RBLX_King", score: 1500, speed: 2 }
+        ];
 
         function saveGame() {
             localStorage.setItem('brainrot_coins', coins);
@@ -312,35 +372,71 @@
                 updateDisplay();
                 saveGame();
             } else {
-                alert("אין לך מספיק מטבעות!");
+                alert("אין לך מספיק מטבעות בשביל השדרוג הזה!");
             }
         }
 
         // ייצור מטבעות אוטומטי לשנייה
         setInterval(function() {
             if (cps > 0) {
-                coins += cps / 10; // מעדכן חלקית כל 100 מילישנייה שיהיה חלק
+                coins += cps / 10;
                 updateDisplay();
                 saveGame();
             }
         }, 100);
 
+        // עדכון התקדמות הבוטים והטבלה פעם ב-2 שניות (זוחל ומתקדם כל הזמן)
+        setInterval(function() {
+            bots.forEach(bot => {
+                bot.score += Math.floor(Math.random() * bot.speed) + 1;
+            });
+            updateLeaderboard();
+        }, 2000);
+
         function updateDisplay() {
             document.getElementById('coins').innerText = Math.floor(coins);
             document.getElementById('cps').innerText = cps;
-            document.getElementById('player-lb-coins').innerText = '👑 ' + Math.floor(coins);
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const lbContainer = document.getElementById('leaderboard');
+            
+            // הכנסת השחקן הנוכחי לרשימת הדירוג
+            let allPlayers = [...bots, { name: playerName + " (אתה)", score: Math.floor(coins), isUser: true }];
+            
+            // מיון השחקנים לפי כמות המטבעות מהגבוה לנמוך
+            allPlayers.sort((a, b) => b.score - a.score);
+
+            let html = "";
+            allPlayers.forEach((player, index) => {
+                let rankEmoji = "";
+                if (index === 0) rankEmoji = "👑 ";
+                else if (index === 1) rankEmoji = "🥈 ";
+                else if (index === 2) rankEmoji = "🥉 ";
+
+                let rowClass = player.isUser ? "lb-item my-score" : "lb-item";
+                
+                html += `<li class="${rowClass}">
+                    <span>${index + 1}. ${rankEmoji}${player.name}</span>
+                    <span>🪙 ${player.score.toLocaleString()}</span>
+                </li>`;
+            });
+
+            lbContainer.innerHTML = html;
         }
 
         function resetGame() {
-            if (confirm("בטוח שתרצה לאפס את כל ההתקדמות?")) {
+            if (confirm("בטוח שתרצה לאפס את כל ההתקדמות והמטבעות?")) {
                 coins = 0;
                 cps = 0;
-                saveGame();
+                localStorage.removeItem('brainrot_coins');
+                localStorage.removeItem('brainrot_cps');
                 updateDisplay();
             }
         }
 
-        // עדכון ראשוני במסך
+        // הפעלה ראשונית
         updateDisplay();
     </script>
 
