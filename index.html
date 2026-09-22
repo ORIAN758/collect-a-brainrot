@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collect a Brainrot — המשחק המשודרג</title>
+    <!-- טעינת ספריות Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    
     <style>
         * {
             box-sizing: border-box;
@@ -228,10 +232,6 @@
             font-weight: bold;
         }
 
-        .lb-item:last-child {
-            border-bottom: none;
-        }
-
         .timer-info {
             font-size: 0.8rem;
             color: #8888aa;
@@ -324,10 +324,10 @@
 
         <div class="sidebar-panel">
             <div class="leaderboard-section">
-                <h2>🏆 טבלת מובילים</h2>
-                <div class="timer-info">הטבלה מתעדכנת אוטומטית כל 15 דקות</div>
+                <h2>🏆 טבלת מובילים בזמן אמת</h2>
+                <div class="timer-info">מתעדכן אוטומטית כששחקנים חדשים נכנסים</div>
                 <ul class="lb-list" id="leaderboard">
-                    <!-- יתמלא אוטומטית לפי ההתקדמות האמיתית שלך -->
+                    <!-- טוען שחקנים אמיתיים מהשרת -->
                 </ul>
                 <button class="reset-btn" onclick="resetGame()">איפוס נתונים 🔄</button>
             </div>
@@ -335,7 +335,27 @@
     </div>
 
     <script>
-        // בחירת שם השחקן מיד בכניסה ראשונה
+        // הגדרת Firebase (צור פרויקט חינמי ב-Firebase Console והחלף את הפרטים כאן)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // זיהוי ייחודי לשחקן הנוכחי (משתמש ב-ID ייחודי שנוצר פעם אחת ונשמר)
+        let playerId = localStorage.getItem('brainrot_player_id');
+        if (!playerId) {
+            playerId = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('brainrot_player_id', playerId);
+        }
+
         let playerName = localStorage.getItem('brainrot_player_name');
         if (!playerName || playerName === "null" || playerName.trim() === "") {
             playerName = prompt("ברוך הבא ל-Collect a Brainrot! בחר את שם השחקן שלך:", "אוריאן");
@@ -348,12 +368,16 @@
         let coins = parseFloat(localStorage.getItem('brainrot_coins')) || 0;
         let cps = parseInt(localStorage.getItem('brainrot_cps')) || 0;
 
-        // שמירת תוצאה היסטורית שמתעדכנת רק כל 15 דקות בטבלה
-        let savedLeaderboardScore = parseFloat(localStorage.getItem('brainrot_lb_score')) || 0;
-
         function saveGame() {
             localStorage.setItem('brainrot_coins', coins);
             localStorage.setItem('brainrot_cps', cps);
+            
+                // שליחת הנתונים של השחקן הנוכחי לשרת בזמן אמת
+            db.ref('players/' + playerId).set({
+                name: playerName,
+                score: Math.floor(coins),
+                lastActive: firebase.database.ServerValue.TIMESTAMP
+            });
         }
 
         function collect() {
@@ -383,41 +407,62 @@
 
         function updateDisplay() {
             document.getElementById('coins').innerText = Math.floor(coins);
+            document.getElementById('cps').cps = cps; // תיקון תצוגה קטן
             document.getElementById('cps').innerText = cps;
-            updateLeaderboardView();
         }
 
-        function updateLeaderboardView() {
+        // האזנה לשינויים בבסיס הנתונים בזמן אמת עבור כל השחקנים שנכנסו
+        db.ref('players').on('value', (snapshot) => {
+            const data = snapshot.val();
             const lbContainer = document.getElementById('leaderboard');
-            lbContainer.innerHTML = `
-                <li class="lb-item my-score">
-                    <span>👑 1. ${playerName} (אתה)</span>
-                    <span>🪙 ${Math.floor(savedLeaderboardScore).toLocaleString()}</span>
-                </li>
-            `;
-        }
+            
+            if (!data) {
+                lbContainer.innerHTML = '<li>אין שחקנים מחוברים כרגע</li>';
+                return;
+            }
 
-        // עדכון טבלת המובילים בפועל כל 15 דקות (15 * 60 * 1000 מילישנייה)
-        setInterval(function() {
-            savedLeaderboardScore = coins;
-            localStorage.setItem('brainrot_lb_score', savedLeaderboardScore);
-            updateLeaderboardView();
-        }, 15 * 60 * 1000);
+            // המרת אובייקט השחקנים למערך
+            let playersList = [];
+            for (let id in data) {
+                playersList.push({
+                    id: id,
+                    name: data[id].name,
+                    score: data[id].score || 0
+                });
+            }
 
-        // אם זו הפעם הראשונה, נגדיר את הניקוד ההתחלתי לטבלה
-        if (!localStorage.getItem('brainrot_lb_score')) {
-            savedLeaderboardScore = coins;
-            localStorage.setItem('brainrot_lb_score', savedLeaderboardScore);
-        }
+            // מיון לפי ניקוד מהגבוה לנמוך
+            playersList.sort((a, b) => b.score - a.score);
+
+            let htmlContent = '';
+            playersList.forEach((player, index) => {
+                let rankIcons = ['👑', '🥈', '🥉', '4️⃣', '5️⃣'];
+                let rankIcon = rankIcons[index] || (index + 1);
+                let isMe = (player.id === playerId);
+                let itemClass = isMe ? "lb-item my-score" : "lb-item";
+                let displayName = isMe ? player.name + " (אתה)" : player.name;
+
+                htmlContent += `
+                    <li class="${itemClass}">
+                        <span>${rankIcon} ${index + 1}. ${displayName}</span>
+                        <span>🪙 ${player.score.toLocaleString()}</span>
+                    </li>
+                `;
+            });
+
+            lbContainer.innerHTML = htmlContent;
+        });
+
+        // עדכון ראשוני לשרת בכניסה
+        saveGame();
 
         function resetGame() {
             if (confirm("בטוח שתרצה לאפס את כל ההתקדמות והמטבעות?")) {
                 coins = 0;
                 cps = 0;
-                savedLeaderboardScore = 0;
                 localStorage.removeItem('brainrot_coins');
                 localStorage.removeItem('brainrot_cps');
-                localStorage.removeItem('brainrot_lb_score');
+                saveGame();
                 updateDisplay();
             }
         }
