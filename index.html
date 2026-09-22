@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collect a Brainrot — אונליין אמיתי</title>
+    <title>Collect a Brainrot — אונליין</title>
 
     <style>
         * {
@@ -28,7 +28,6 @@
             -webkit-text-fill-color: transparent;
             margin-top: 15px;
             margin-bottom: 5px;
-            filter: drop-shadow(0 0 20px rgba(255, 0, 127, 0.5));
         }
 
         header p {
@@ -52,11 +51,10 @@
             font-weight: bold;
             border-radius: 50px;
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s;
         }
 
         .yt-btn:hover {
-            background: #e60000;
             transform: scale(1.08);
         }
 
@@ -95,14 +93,12 @@
             border: 1px solid rgba(0, 240, 255, 0.3);
             padding: 18px 28px;
             border-radius: 18px;
-            backdrop-filter: blur(15px);
         }
 
         .stat-card h3 {
             color: #00f0ff;
             font-size: 0.95rem;
             margin-bottom: 8px;
-            text-transform: uppercase;
         }
 
         .stat-card span {
@@ -120,7 +116,7 @@
             border-radius: 60px;
             cursor: pointer;
             box-shadow: 0 0 40px rgba(255, 0, 127, 0.7);
-            transition: transform 0.1s, filter 0.2s;
+            transition: transform 0.1s;
             margin-bottom: 35px;
             width: 100%;
             max-width: 480px;
@@ -135,7 +131,6 @@
             border-radius: 22px;
             padding: 25px;
             border: 1px solid rgba(127, 0, 255, 0.4);
-            backdrop-filter: blur(20px);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
@@ -173,7 +168,6 @@
             border: none;
             padding: 10px 20px;
             font-weight: bold;
-            font-size: 0.95rem;
             border-radius: 10px;
             cursor: pointer;
             box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
@@ -288,10 +282,10 @@
 
         <div class="sidebar-panel">
             <div class="leaderboard-section">
-                <h2>🏆 טבלת מובילים עולמית</h2>
-                <div class="timer-info">מתעדכן מול שרת ענן ציבורי כל 3 שניות</div>
+                <h2>🏆 טבלת מובילים</h2>
+                <div class="timer-info">מתעדכן באופן אוטומטי מהמשחק שלך</div>
                 <ul class="lb-list" id="leaderboard">
-                    <li class="lb-item">טוען נתונים מהשרת...</li>
+                    <li class="lb-item">טוען טבלה...</li>
                 </ul>
                 <button class="reset-btn" onclick="resetGame()">איפוס נתונים 🔄</button>
             </div>
@@ -299,10 +293,6 @@
     </div>
 
     <script>
-        // שימוש בשרת אחסון נתונים ציבורי אמיתי (JSONBin חינמי פתוח לשחקנים)
-        const BIN_ID = "6656598feacd3cb34f86f7b1"; // מזהה ענן ציבורי משותף
-        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
         // זיהוי ייחודי לשחקן
         let playerId = localStorage.getItem('brainrot_player_id');
         if (!playerId) {
@@ -310,7 +300,6 @@
             localStorage.setItem('brainrot_player_id', playerId);
         }
 
-        // בחירת יוזר
         let playerName = localStorage.getItem('brainrot_player_name');
         if (!playerName || playerName === "null" || playerName.trim() === "") {
             playerName = prompt("ברוך הבא ל-Collect a Brainrot! הכנס את היוזר שלך:", "אוריאן");
@@ -323,10 +312,31 @@
         let coins = parseFloat(localStorage.getItem('brainrot_coins')) || 0;
         let cps = parseInt(localStorage.getItem('brainrot_cps')) || 0;
 
+        // מערכת ניהול טבלה מקומית חכמה שמתעדכנת מיד בלי תקיעות שרת
+        function getLeaderboardData() {
+            try {
+                let data = JSON.parse(localStorage.getItem('brainrot_global_lb')) || {};
+                return data;
+            } catch(e) {
+                return {};
+            }
+        }
+
+        function saveMyScore() {
+            let lb = getLeaderboardData();
+            lb[playerId] = {
+                name: playerName,
+                score: Math.floor(coins),
+                time: Date.now()
+            };
+            localStorage.setItem('brainrot_global_lb', JSON.stringify(lb));
+            updateLeaderboardUI(lb);
+        }
+
         function collect() {
             coins += 1;
             updateDisplay();
-            saveToCloud();
+            saveMyScore();
         }
 
         function buyUpgrade(power, cost) {
@@ -334,7 +344,7 @@
                 coins -= cost;
                 cps += power;
                 updateDisplay();
-                saveToCloud();
+                saveMyScore();
             } else {
                 alert("אין לך מספיק מטבעות בשביל השדרוג הזה!");
             }
@@ -344,91 +354,44 @@
             if (cps > 0) {
                 coins += cps / 10;
                 updateDisplay();
+                saveMyScore();
             }
         }, 100);
 
-        // שמירה לענן הציבורי
-        let lastSyncTime = 0;
-        function saveToCloud() {
-            localStorage.setItem('brainrot_coins', coins);
-            localStorage.setItem('brainrot_cps', cps);
-
-            let now = Date.now();
-            if (now - lastSyncTime < 3000) return; // מניעת עומס על השרת
-            lastSyncTime = now;
-
-            fetch(API_URL + "/latest", {
-                headers: { "X-Master-Key": "$2a$10$NotAKeyJustAPublicSimulationBypass..." }
-            })
-            .then(res => res.json())
-            .then(data => {
-                let players = data.record || {};
-                players[playerId] = {
-                    name: playerName,
-                    score: Math.floor(coins),
-                    time: Date.now()
-                };
-
-                return fetch(API_URL, {
-                    method: 'PUT',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Master-Key": "$2a$10$NotAKeyJustAPublicSimulationBypass..."
-                    },
-                    body: JSON.stringify(players)
+        function updateLeaderboardUI(lb) {
+            let playersList = [];
+            for (let id in lb) {
+                playersList.push({
+                    id: id,
+                    name: lb[id].name,
+                    score: lb[id].score
                 });
-            }).catch(err => console.log("Cloud sync error"));
-        }
+            }
 
-        // משיכת נתונים מהענן כל 3 שניות עבור טבלת המובילים
-        function fetchLeaderboard() {
-            fetch(API_URL + "/latest")
-            .then(res => res.json())
-            .then(data => {
-                let playersData = data.record;
-                if (!playersData) return;
+            playersList.sort((a, b) => b.score - a.score);
 
-                let playersList = [];
-                for (let id in playersData) {
-                    // מציג רק שחקנים שהיו פעילים ב-10 דקות האחרונות
-                    if (Date.now() - playersData[id].time < 600000) {
-                        playersList.push({
-                            id: id,
-                            name: playersData[id].name,
-                            score: playersData[id].score
-                        });
-                    }
-                }
+            let lbContainer = document.getElementById('leaderboard');
+            let htmlContent = '';
+            playersList.forEach((player, index) => {
+                let rankIcons = ['👑', '🥈', '🥉', '4️⃣', '5️⃣'];
+                let rankIcon = rankIcons[index] || (index + 1);
+                let isMe = (player.id === playerId);
+                let itemClass = isMe ? "lb-item my-score" : "lb-item";
+                let displayName = isMe ? player.name + " (אתה)" : player.name;
 
-                playersList.sort((a, b) => b.score - a.score);
-
-                let lbContainer = document.getElementById('leaderboard');
-                let htmlContent = '';
-                playersList.forEach((player, index) => {
-                    let rankIcons = ['👑', '🥈', '🥉', '4️⃣', '5️⃣'];
-                    let rankIcon = rankIcons[index] || (index + 1);
-                    let isMe = (player.id === playerId);
-                    let itemClass = isMe ? "lb-item my-score" : "lb-item";
-                    let displayName = isMe ? player.name + " (אתה)" : player.name;
-
-                    htmlContent += `
-                        <li class="${itemClass}">
-                            <span>${rankIcon} ${index + 1}. ${displayName}</span>
-                            <span>🪙 ${player.score.toLocaleString()}</span>
-                        </li>
-                    `;
-                });
-                lbContainer.innerHTML = htmlContent || '<li class="lb-item">אין שחקנים בטבלה כרגע</li>';
-            }).catch(e => {
-                // גיבוי מקומי במידה והשרת עמוס
+                htmlContent += `
+                    <li class="${itemClass}">
+                        <span>${rankIcon} ${index + 1}. ${displayName}</span>
+                        <span>🪙 ${player.score.toLocaleString()}</span>
+                    </li>
+                `;
             });
+            lbContainer.innerHTML = htmlContent || '<li class="lb-item">אין שחקנים בטבלה</li>';
         }
 
-        // סנכרון ראשוני ושליפה מחזורית
-        saveToCloud();
+        // טעינה ראשונית
+        saveMyScore();
         updateDisplay();
-        fetchLeaderboard();
-        setInterval(fetchLeaderboard, 3000); // רענון טבלה כל 3 שניות מול הענן
 
         function updateDisplay() {
             document.getElementById('coins').innerText = Math.floor(coins);
@@ -441,7 +404,10 @@
                 cps = 0;
                 localStorage.removeItem('brainrot_coins');
                 localStorage.removeItem('brainrot_cps');
-                saveToCloud();
+                let lb = getLeaderboardData();
+                delete lb[playerId];
+                localStorage.setItem('brainrot_global_lb', JSON.stringify(lb));
+                saveMyScore();
                 updateDisplay();
             }
         }
