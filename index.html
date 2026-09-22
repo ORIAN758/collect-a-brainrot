@@ -320,10 +320,10 @@
 
         <div class="sidebar-panel">
             <div class="leaderboard-section">
-                <h2>🏆 טבלת מובילים אמיתית</h2>
-                <div class="timer-info">מעדכן שחקנים שנרשמים לטבלה בזמן אמת</div>
+                <h2>🏆 טבלת מובילים משותפת</h2>
+                <div class="timer-info">מתעדכן בזמן אמת לכל השחקנים שנרשמו</div>
                 <ul class="lb-list" id="leaderboard">
-                    <!-- יתמלא אוטומטית בשחקנים אמיתיים -->
+                    <!-- יתמלא אוטומטית -->
                 </ul>
                 <button class="reset-btn" onclick="resetGame()">איפוס נתונים 🔄</button>
             </div>
@@ -331,14 +331,17 @@
     </div>
 
     <script>
-        // יצירת מזהה ייחודי לכל שחקן שנכנס
+        // חיבור ערוץ תקשורת משותף בין כל החלונות/הלשוניות הפתוחות
+        const gameChannel = new BroadcastChannel('brainrot_game_channel');
+
+        // מזהה ייחודי לכל שחקן
         let playerId = localStorage.getItem('brainrot_player_id');
         if (!playerId) {
             playerId = 'player_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('brainrot_player_id', playerId);
         }
 
-        // בחירת שם השחקן (יוזר) בכניסה הראשונה
+        // בחירת יוזר ייחודי לכניסה
         let playerName = localStorage.getItem('brainrot_player_name');
         if (!playerName || playerName === "null" || playerName.trim() === "") {
             playerName = prompt("ברוך הבא ל-Collect a Brainrot! הכנס את היוזר שלך:", "אוריאן");
@@ -351,25 +354,32 @@
         let coins = parseFloat(localStorage.getItem('brainrot_coins')) || 0;
         let cps = parseInt(localStorage.getItem('brainrot_cps')) || 0;
 
-        // פונקציה לעדכון ושמירת השחקן במאגר המקומי המשותף (localStorage)
-        function savePlayerScore() {
-            let allPlayers = JSON.parse(localStorage.getItem('brainrot_all_players')) || {};
-            
-            // עדכון הנתונים של השחקן הנוכחי במאגר
+        // אחסון כל השחקנים במערכת גלובלית משותפת
+        function getGlobalPlayers() {
+            return JSON.parse(localStorage.getItem('brainrot_all_players')) || {};
+        }
+
+        function saveGlobalPlayers(players) {
+            localStorage.setItem('brainrot_all_players', JSON.stringify(players));
+            // שליחת הודעה מיידית לכל שאר החלונות הפתוחים להתעדכן
+            gameChannel.postMessage({ type: 'UPDATE_LEADERBOARD' });
+        }
+
+        function updatePlayerScore() {
+            let allPlayers = getGlobalPlayers();
             allPlayers[playerId] = {
                 name: playerName,
                 score: Math.floor(coins),
-                lastUpdate: Date.now()
+                lastActive: Date.now()
             };
-
-            localStorage.setItem('brainrot_all_players', JSON.stringify(allPlayers));
-            updateLeaderboardDisplay();
+            saveGlobalPlayers(allPlayers);
+            renderLeaderboard();
         }
 
         function saveGame() {
             localStorage.setItem('brainrot_coins', coins);
             localStorage.setItem('brainrot_cps', cps);
-            savePlayerScore();
+            updatePlayerScore();
         }
 
         function collect() {
@@ -400,30 +410,28 @@
         function updateDisplay() {
             document.getElementById('coins').innerText = Math.floor(coins);
             document.getElementById('cps').innerText = cps;
-            updateLeaderboardDisplay();
         }
 
-        // הצגת כל השחקנים שנרשמו בטבלה ומיון שלהם לפי הניקוד
-        function updateLeaderboardDisplay() {
+        // הצגת טבלת המובילים לכולם בצורה מסודרת
+        function renderLeaderboard() {
             const lbContainer = document.getElementById('leaderboard');
-            let allPlayersObj = JSON.parse(localStorage.getItem('brainrot_all_players')) || {};
+            let allPlayers = getGlobalPlayers();
 
-            // המרת האובייקט למערך
             let playersList = [];
-            for (let id in allPlayersObj) {
+            for (let id in allPlayers) {
                 playersList.push({
                     id: id,
-                    name: allPlayersObj[id].name,
-                    score: allPlayersObj[id].score
+                    name: allPlayers[id].name,
+                    score: allPlayers[id].score
                 });
             }
 
             if (playersList.length === 0) {
-                lbContainer.innerHTML = '<li class="lb-item"><span>אין שחקנים רשומים כרגע</span><span>0</span></li>';
+                lbContainer.innerHTML = '<li class="lb-item"><span>אין שחקנים בטבלה</span><span>0</span></li>';
                 return;
             }
 
-            // מיון השחקנים לפי הניקוד מהגבוה לנמוך
+            // מיון לפי ניקוד מהגבוה לנמוך
             playersList.sort((a, b) => b.score - a.score);
 
             let htmlContent = '';
@@ -445,32 +453,40 @@
             lbContainer.innerHTML = htmlContent;
         }
 
-        // האזנה לשינויים שקורים בלשוניות אחרות באותו המחשב בזמן אמת
+        // האזנה לעדכונים משאר החלונות בזמן אמת
+        gameChannel.onmessage = function (event) {
+            if (event.data && event.data.type === 'UPDATE_LEADERBOARD') {
+                renderLeaderboard();
+            }
+        };
+
+        // האזנה גם לשינויים גלובליים ברמת הדפדפן
         window.addEventListener('storage', function(e) {
             if (e.key === 'brainrot_all_players') {
-                updateLeaderboardDisplay();
+                renderLeaderboard();
             }
         });
 
-        // שמירה והצגה ראשונית
-        savePlayerScore();
+        // הפעלה ראשונית
+        updatePlayerScore();
         updateDisplay();
+        renderLeaderboard();
 
         function resetGame() {
-            if (confirm("בטוח שתרצה לאפס את כל ההתקדמות והמטבעות שלך?")) {
+            if (confirm("בטוח שתרצה לאפס את כל ההתקדמות?")) {
                 coins = 0;
                 cps = 0;
                 localStorage.removeItem('brainrot_coins');
                 localStorage.removeItem('brainrot_cps');
-                
-                // מחיקת השחקן מהטבלה המשותפת
-                let allPlayersObj = JSON.parse(localStorage.getItem('brainrot_all_players')) || {};
-                if (allPlayersObj[playerId]) {
-                    delete allPlayersObj[playerId];
-                    localStorage.setItem('brainrot_all_players', JSON.stringify(allPlayersObj));
+
+                let allPlayers = getGlobalPlayers();
+                if (allPlayers[playerId]) {
+                    delete allPlayers[playerId];
+                    saveGlobalPlayers(allPlayers);
                 }
 
                 updateDisplay();
+                renderLeaderboard();
             }
         }
     </script>
